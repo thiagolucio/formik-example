@@ -1,6 +1,5 @@
 import React from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import schema from './schema';
+import { Formik, Field, Form } from 'formik';
 import './App.css';
 
 function App() {
@@ -10,12 +9,22 @@ function App() {
     console.log('VALUES', values);
   }
 
+  function validate(values) {    
+    const errors= {};
+    if(!values.name)
+      errors.name = 'Nome é Obrigatório';
+    if(!values.email)
+      errors.email = 'Email é Obrigatório';
+    return errors;
+  }
+
   return (
     <div className="App">
       <Formik       
-     validationSchema={schema}     
       onSubmit={onSubmit}
-      validateOnBlur 
+      validateOnBlur
+      // validateOnMount  - caso queira mostrar ao montar os avisos de validacao
+      validate={validate}
       
       initialValues={{
           name: '',
@@ -23,22 +32,26 @@ function App() {
         }}
         >
         
-        {({ isValid }) => (      
+        {({ errors, touched, isValid }) => (      
           <div className="container">
             <div className="row">
-              <h1>Formik basic example Form</h1>
+              <h1>Formik and Yup basic example Form</h1>
             </div>
             <div className="row">
               <Form>
                 <div>
                   <label>Nome</label>
                   <Field name="name" type="text" className="field-input"/>
-                  <ErrorMessage name="name" className="badge-error" />
+                  {errors.name && touched.name && (
+                    <div className="badge-error">{errors.name}</div>
+                    )}
                 </div>
                 <div>
                   <label>Email</label>
                   <Field name="email" type="email" className="field-input"/>
-                  <ErrorMessage name="email" className="badge-error" />       
+                    {errors.email && touched.email && (
+                      <div className="badge-error">{errors.email}</div>
+                  )}
                 </div>
                 <button className="btnSubmit" type="submit" disabled={!isValid}>Salvar</button>
               </Form>
